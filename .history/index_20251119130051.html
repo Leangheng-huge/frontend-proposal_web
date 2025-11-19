@@ -298,21 +298,3 @@ async function respondToProposal(response) {
 
 function triggerAnimation(response) {
     const layer = document.getElementById('animationLayer');
-    for (let i = 0; i < 15; i++) {
-        const span = document.createElement('span');
-        span.textContent = response === 'YES' ? '❤️' : '💧';
-        span.className = response === 'YES' ? 'floating-heart' : 'falling-tear';
-        span.style.left = Math.random() * 100 + 'vw';
-        span.style.animationDuration = (1 + Math.random() * 1.5) + 's';
-        layer.appendChild(span);
-        span.addEventListener('animationend', () => span.remove());
-    }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('proposal')) { showPage('proposalPage'); }
-});
-</script>
-</body>
-</html>
