@@ -130,7 +130,7 @@
         <h1>Welcome, <span id="welcomeEmail"></span>! 💖</h1>
         <div class="link-section">
             <h3>Your Proposal Link</h3>
-            <p>Please copyLink below and paste it to someone you like and you will get the answer via your email!!</p>
+            <p>Please </p>
             <div class="link-display" id="shareableLink">Creating your proposal...</div>
             <button class="btn-copy" onclick="copyLink(event)">📋 Copy Link</button>
         </div>
@@ -172,7 +172,7 @@
 </div>
 
 <script>
-const API_BASE_URL = 'spirited-strength-production.up.railway.app';
+const API_BASE_URL = 'http://localhost:8080/api';
 let currentUser = null;
 let currentProposalId = null;
 let statusCheckInterval = null;
