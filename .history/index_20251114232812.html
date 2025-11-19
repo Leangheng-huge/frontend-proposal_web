@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Form</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins", sans-serif;
+
+            /* MODERN GRADIENT BACKGROUND */
+            background: linear-gradient(135deg, #4f46e5, #06b6d4, #3b82f6);
+            background-size: 300% 300%;
+            animation: bgAnimation 10s ease infinite;
+        }
+
+        @keyframes bgAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* MODERN GLASS FORM */
+        form {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 40px;
+            width: 360px;
+            box-shadow: 0px 15px 30px rgba(0,0,0,0.25);
+
+            color: white;
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+
+            background: rgba(255,255,255,0.3);
+            color: white;
+            font-size: 15px;
+        }
+
+        input::placeholder {
+            color: #f0f0f0;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            background: #10b981;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+
+<body>
+    <form>
+        <h2 style="text-align:center; margin-bottom:25px;">Login</h2>
+
+        <div>
+            <label>Name</label>
+            <input type="text" placeholder="Enter your name">
+        </div>
+
+        <div>
+            <label>Email</label>
+            <input type="email" placeholder="Enter your email">
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

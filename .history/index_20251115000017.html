@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Page Website</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        a.btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #298868;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        a.btn:hover {
+            background-color: #059669;
+        }
+
+        #page1 {
+            background-image: url("wallpaperflare.com_wallpaper (12).jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        form {
+            background: rgba(255,255,255,0.2);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        label {
+            display: block;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #da359a;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c065c0;
+        }
+
+        #page2 {
+            background-color: #f3f4f6;
+            display: none;
+            flex-direction: column;
+            padding: 50px;
+            text-align: center;
+        }
+
+        #page2.show {
+            display: flex;
+        }
+
+        #page1.hide {
+            display: none;
+        }
+
+        #page2 p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            line-height: 1.6;
+            color: #111827;
+        }
+
+        #page2 h1 {
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        .error {
+            color: #ef4444;
+            background: rgba(254, 226, 226, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SECOND PAGE -->
+    <section id="page2">
+        <h1>Welcome to My Website</h1>
+        <p id="welcomeMessage">Thank you for logging in!</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla, eaque eveniet blanditiis quos soluta quod vitae illum non odio excepturi.</p>
+        <a href="#" onclick="goBackToLogin()" class="btn">Go Back to Login</a>
+    </section>
+
+    <!-- FIRST PAGE: Login -->
+    <section id="page1">
+        <form id="loginForm">
+            <div class="error" id="errorMessage"></div>
+            
+            <label>Name:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label>Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <button type="submit">Login</button>
+        </form>
+    </section>
+
+    <script>
+        // Configure your Spring Boot backend URL here
+        const API_URL = 'http://localhost:8080/api/login';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            const form = e.target;
+            const submitBtn = form.querySelector('button');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            // Hide previous errors
+            errorDiv.style.display = 'none';
+            
+            // Show loading state
+            submitBtn.textContent = 'Logging in...';
+            form.classList.add('loading');
+            
+            try {
+                // Send data to Spring Boot backend
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Login successful:', data);
+                    
+                    // Update welcome message with user's name
+                    document.getElementById('welcomeMessage').textContent = 
+                        `Welcome, ${name}!`;
+                    
+                    // Show page 2
+                    document.getElementById('page1').classList.add('hide');
+                    document.getElementById('page2').classList.add('show');
+                    
+                    // Reset form
+                    form.reset();
+                } else {
+                    // Handle error response
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Login failed');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                // Reset button state
+                submitBtn.textContent = 'Login';
+                form.classList.remove('loading');
+            }
+        });
+        
+        function goBackToLogin() {
+            document.getElementById('page2').classList.remove('show');
+            document.getElementById('page1').classList.remove('hide');
+        }
+    </script>
+
+</body>
+</html>

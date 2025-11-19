@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEBSITE</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+
+            background-image: url("wallpaperflare.com_wallpaper (12).jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            transition: 0.4s;
+        }
+
+        /* First Page (Login Form) */
+        #page1, #page2 {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            width: 350px;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.3);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+        }
+
+        button, .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: #059669;
+        }
+
+        /* Hide page2 by default */
+        #page2 {
+            display: none;
+        }
+
+        /* Show page2 when targeted */
+        #page2:target {
+            display: block;
+        }
+
+        /* Hide page1 when page2 is shown */
+        #page2:target ~ #page1 {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SECOND PAGE -->
+    <div id="page2">
+       <h1>Hello My Firend</h1>
+    </div>
+
+    <!-- FIRST PAGE -->
+    <div id="page1">
+        <form action="#page2">
+            <label>Name:</label>
+            <input type="text" required>
+
+            <label>Email:</label>
+            <input type="email" required>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+</body>
+</html>
