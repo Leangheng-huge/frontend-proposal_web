@@ -269,29 +269,10 @@ async function checkProposalStatus() {
         console.error('❌ Status check error:', error);
     }
 }
-function showNotification(response, message) {
-    console.log('🔔 Showing notification:', response, message);
-    
-    const area = document.getElementById('notificationArea');
-    const messageEl = document.getElementById('notificationMessage');
-    
-    area.classList.add('show');
-    
-    if (response === 'YES') {
-        area.classList.add('success');
-        area.style.backgroundColor = '#d4edda';
-        area.style.borderColor = '#c3e6cb';
-        area.style.color = '#155724';
-    } else {
-        area.classList.add('rejection');
-        area.style.backgroundColor = '#f8d7da';
-        area.style.borderColor = '#f5c6cb';
-        area.style.color = '#721c24';
-    }
-    
-    messageEl.textContent = message;
-    
-    console.log('✅ Notification displayed!');
+function showNotification(response,message){
+    const area=document.getElementById('notificationArea');
+    area.classList.add('show', response==='YES'?'success':'rejection');
+    document.getElementById('notificationMessage').textContent=message;
 }
 
 async function respondToProposal(response){
