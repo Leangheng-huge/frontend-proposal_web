@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Romantic Proposal App</title>
 <style>
+/* ==== STYLES SAME AS YOUR ORIGINAL ==== */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:100vh; display:flex; justify-content:center; align-items:center; }
 .page { display:none; width:100%; min-height:100vh; }
@@ -23,6 +24,7 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 .btn-primary:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(102,126,234,0.4); }
 .btn-primary:disabled { opacity:0.6; cursor:not-allowed; }
 .error-message { color:#e74c3c; font-size:14px; margin-top:10px; padding:10px; background:#fee; border-radius:5px; display:none; }
+/* Dashboard */
 #dashboardPage{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);padding:20px;}
 .dashboard-container{background:white;padding:40px;border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,0.2);width:90%;max-width:600px;text-align:center;}
 .link-section{background:#f8f9fa;padding:25px;border-radius:10px;margin:30px 0;}
@@ -30,6 +32,7 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 .btn-copy{background:#667eea;color:white;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;}
 .notification-area{margin-top:30px;padding:20px;border-radius:10px;display:none;}
 .notification-area.show{display:block;}
+/* Proposal */
 #proposalPage{background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);}
 .proposal-container{background:white;padding:50px;border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:90%;}
 .heart{font-size:60px;margin-bottom:30px;}
@@ -40,6 +43,7 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 #yesResponsePage{background:#FFC0CB;}
 #noResponsePage{background:#000000;}
 .response-message{text-align:center;padding:40px;max-width:800px;color:white;}
+/* Animation */
 #animationLayer{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:9999;}
 .floating-heart{position:absolute;font-size:24px;animation:floatUp 2s ease-out forwards;opacity:0;}
 .falling-tear{position:absolute;font-size:24px;color:#00f;animation:fallDown 2s ease-in forwards;opacity:0;}
@@ -50,46 +54,49 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 <body>
 <div id="animationLayer"></div>
 
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="page active">
 <div class="login-container">
 <h1>💕 Romantic Proposal</h1>
 <form id="loginForm">
 <div class="form-group">
 <label for="email">Email</label>
-<input type="email" id="email" required>
+<input type="email" id="email" name="email" required>
 </div>
 <div class="form-group">
 <label for="password">Password</label>
 <div class="password-wrapper">
-<input type="password" id="password" required>
+<input type="password" id="password" name="password" required>
 <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
 </div>
 </div>
 <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
 <div class="error-message" id="loginError"></div>
 <p style="text-align:center;margin-top:20px;color:#666;">
-Don't have an account? <a href="#" onclick="showPage('registerPage');return false;" style="color:#667eea;font-weight:600;">Register here</a>
+Don't have an account?
+<a href="#" onclick="showPage('registerPage');return false;" style="color:#667eea;font-weight:600;">Register here</a>
 </p>
 </form>
 </div>
 </div>
 
+<!-- REGISTER PAGE -->
 <div id="registerPage" class="page">
 <div class="login-container">
 <h1>💕 Create Account</h1>
 <form id="registerForm">
 <div class="form-group">
 <label for="regName">Name</label>
-<input type="text" id="regName" required>
+<input type="text" id="regName" name="name" required>
 </div>
 <div class="form-group">
 <label for="regEmail">Email</label>
-<input type="email" id="regEmail" required>
+<input type="email" id="regEmail" name="email" required>
 </div>
 <div class="form-group">
 <label for="regPassword">Password</label>
 <div class="password-wrapper">
-<input type="password" id="regPassword" required minlength="6">
+<input type="password" id="regPassword" name="password" required minlength="6">
 <button type="button" class="password-toggle" onclick="toggleRegPassword()">👁️</button>
 </div>
 <small style="color:#666;">At least 6 characters</small>
@@ -97,18 +104,20 @@ Don't have an account? <a href="#" onclick="showPage('registerPage');return fals
 <button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
 <div class="error-message" id="registerError"></div>
 <p style="text-align:center;margin-top:20px;color:#666;">
-Already have an account? <a href="#" onclick="showPage('loginPage');return false;" style="color:#667eea;font-weight:600;">Login here</a>
+Already have an account?
+<a href="#" onclick="showPage('loginPage');return false;" style="color:#667eea;font-weight:600;">Login here</a>
 </p>
 </form>
 </div>
 </div>
 
+<!-- DASHBOARD PAGE -->
 <div id="dashboardPage" class="page">
 <div class="dashboard-container">
 <h1>Welcome, <span id="welcomeEmail"></span>! 💖</h1>
 <div class="link-section">
 <h3>Your Proposal Link</h3>
-<p style="margin-bottom:15px;">Copy the link below and share it with someone special!</p>
+<p>Please copyLink below and paste it to someone you like and you will get the answer via your email!!</p>
 <div class="link-display" id="shareableLink">Creating your proposal...</div>
 <button class="btn-copy" onclick="copyLink(event)">📋 Copy Link</button>
 </div>
@@ -119,6 +128,7 @@ Already have an account? <a href="#" onclick="showPage('loginPage');return false
 </div>
 </div>
 
+<!-- PROPOSAL PAGE -->
 <div id="proposalPage" class="page">
 <div class="proposal-container">
 <div class="heart">❤️</div>
@@ -131,22 +141,25 @@ Already have an account? <a href="#" onclick="showPage('loginPage');return false
 </div>
 </div>
 
+<!-- RESPONSE PAGES -->
 <div id="yesResponsePage" class="page">
 <div class="response-message">
 <h1>I love you since a long time!! 💕</h1>
-<p>A relationship is about 2 people. Happiness and joy should go both ways.</p>
+<p>A relationship is about 2 people. Happiness and joy should go both ways. 
+If someday I make you feel miserable or unhappy please let me know. 
+And if I still cannot make you happy, I will let you go with a heavy heart.
+</p>
 </div>
 </div>
 
 <div id="noResponsePage" class="page">
 <div class="response-message">
-<h1>It's okay, I respect your choice. 😄</h1>
+<h1>It's okay, I respect your choice.😄</h1>
 </div>
 </div>
 
 <script>
-// ✅ FIXED: No CORS proxy needed!
-const API_BASE_URL = 'https://spirited-strength-production.up.railway.app/api';
+const API_BASE_URL = 'https://corsproxy.io/?https://spirited-strength-production.up.railway.app/api';
 let currentUser = null;
 let currentProposalId = null;
 let statusCheckInterval = null;
@@ -156,17 +169,9 @@ function showPage(pageId) {
     document.getElementById(pageId).classList.add('active');
 }
 
-function togglePassword() { 
-    const input = document.getElementById('password'); 
-    input.type = input.type==='password'?'text':'password'; 
-}
+function togglePassword() { const input = document.getElementById('password'); input.type = input.type==='password'?'text':'password'; }
+function toggleRegPassword() { const input = document.getElementById('regPassword'); input.type = input.type==='password'?'text':'password'; }
 
-function toggleRegPassword() { 
-    const input = document.getElementById('regPassword'); 
-    input.type = input.type==='password'?'text':'password'; 
-}
-
-// Registration
 document.getElementById('registerForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const name=document.getElementById('regName').value;
@@ -174,140 +179,67 @@ document.getElementById('registerForm').addEventListener('submit', async (e)=>{
     const password=document.getElementById('regPassword').value;
     const errorDiv=document.getElementById('registerError');
     const registerBtn=document.getElementById('registerBtn');
-    
-    registerBtn.disabled=true; 
-    registerBtn.textContent='Creating Account...'; 
-    errorDiv.style.display='none';
-    
-    console.log('📝 Registering:', email);
-    
+    registerBtn.disabled=true; registerBtn.textContent='Creating Account...'; errorDiv.style.display='none';
     try{
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({name,email,password})
         });
-        
-        if(!response.ok){ 
-            const errorData=await response.json().catch(()=>({message:'Registration failed'})); 
-            throw new Error(errorData.message||`Error:${response.status}`);
-        }
-        
+        if(!response.ok){ const errorData=await response.json().catch(()=>({message:'Registration failed'})); throw new Error(errorData.message||`Error:${response.status}`);}
         const data=await response.json();
-        console.log('✅ Registered:', data);
-        
         currentUser={ email:data.email, token:data.token, userId:data.userId };
         document.getElementById('welcomeEmail').textContent=email;
         showPage('dashboardPage');
         await createProposal();
-        
-    } catch(e){ 
-        console.error('❌ Registration error:', e);
-        errorDiv.textContent=`Failed to register: ${e.message}`; 
-        errorDiv.style.display='block';
-    } finally{
-        registerBtn.disabled=false;
-        registerBtn.textContent='Create Account';
-    }
+    } catch(e){ errorDiv.textContent=`Failed to register: ${e.message}`; errorDiv.style.display='block';}
+    finally{registerBtn.disabled=false;registerBtn.textContent='Create Account';}
 });
 
-// Login
 document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const email=document.getElementById('email').value;
     const password=document.getElementById('password').value;
     const errorDiv=document.getElementById('loginError');
     const loginBtn=document.getElementById('loginBtn');
-    
-    loginBtn.disabled=true; 
-    loginBtn.textContent='Logging in...'; 
-    errorDiv.style.display='none';
-    
-    console.log('🔐 Logging in:', email);
-    
+    loginBtn.disabled=true; loginBtn.textContent='Logging in...'; errorDiv.style.display='none';
     try{
         const response=await fetch(`${API_BASE_URL}/auth/login`, {
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({email,password})
         });
-        
-        if(!response.ok){ 
-            const errorData=await response.json().catch(()=>({message:'Login failed'})); 
-            throw new Error(errorData.message||`Error:${response.status}`);
-        }
-        
+        if(!response.ok){ const errorData=await response.json().catch(()=>({message:'Login failed'})); throw new Error(errorData.message||`Error:${response.status}`);}
         const data=await response.json();
-        console.log('✅ Logged in:', data);
-        
         currentUser={ email:data.email, token:data.token, userId:data.userId };
         document.getElementById('welcomeEmail').textContent=email;
         showPage('dashboardPage');
         await createProposal();
-        
-    } catch(e){ 
-        console.error('❌ Login error:', e);
-        errorDiv.textContent=`Failed to login: ${e.message}`; 
-        errorDiv.style.display='block'; 
-    } finally{ 
-        loginBtn.disabled=false; 
-        loginBtn.textContent='Login';
-    }
+    } catch(e){ errorDiv.textContent=`Failed to login: ${e.message}`; errorDiv.style.display='block'; }
+    finally{ loginBtn.disabled=false; loginBtn.textContent='Login';}
 });
 
-// Create Proposal
 async function createProposal(){
-    console.log('🎯 Creating proposal...');
-    
     try{
         const response=await fetch(`${API_BASE_URL}/proposal/create`,{
             method:'POST',
-            headers:{
-                'Authorization':`Bearer ${currentUser.token}`,
-                'Content-Type':'application/json'
-            }
+            headers:{'Authorization':`Bearer ${currentUser.token}`,'Content-Type':'application/json'}
         });
-        
-        if(!response.ok){ 
-            throw new Error(`Failed to create proposal: ${response.status}`);
-        }
-        
+        if(!response.ok){ const errorText=await response.text(); throw new Error(`Failed to create proposal: ${response.status}`);}
         const data=await response.json();
-        console.log('✅ Proposal created:', data);
-        
         currentProposalId=data.proposalId||data.id;
         const shareableLink=data.shareableLink||data.shareable_link;
-        
-        if(shareableLink){ 
-            document.getElementById('shareableLink').textContent=shareableLink; 
-            console.log('🔄 Starting status check for proposal:', currentProposalId);
-            startStatusCheck();
-        } else {
-            throw new Error('No shareable link in response');
-        }
-        
-    } catch(e){ 
-        console.error('❌ Proposal creation error:', e);
-        document.getElementById('shareableLink').textContent='Error: '+e.message; 
-    }
+        if(shareableLink){ document.getElementById('shareableLink').textContent=shareableLink; startStatusCheck();}
+        else throw new Error('No shareable link in response');
+    } catch(e){ document.getElementById('shareableLink').textContent='Error: '+e.message; }
 }
 
-// Copy Link
 function copyLink(e){ 
     const linkText=document.getElementById('shareableLink').textContent;
-    navigator.clipboard.writeText(linkText).then(()=>{ 
-        const btn=e.target; 
-        btn.textContent='✓ Copied!'; 
-        setTimeout(()=>btn.textContent='📋 Copy Link',2000); 
-    });
+    navigator.clipboard.writeText(linkText).then(()=>{ const btn=e.target; btn.textContent='✓ Copied!'; setTimeout(()=>btn.textContent='📋 Copy Link',2000); });
 }
 
-// Status Checking
-function startStatusCheck(){ 
-    console.log('⏰ Status check interval started');
-    statusCheckInterval=setInterval(checkProposalStatus,5000); 
-}
-
+function startStatusCheck(){ statusCheckInterval=setInterval(checkProposalStatus,5000); }
 async function checkProposalStatus() {
     try {
         console.log('🔍 Checking proposal status for ID:', currentProposalId);
@@ -337,8 +269,6 @@ async function checkProposalStatus() {
         console.error('❌ Status check error:', error);
     }
 }
-
-// Show Notification
 function showNotification(response, message) {
     console.log('🔔 Showing notification:', response, message);
     
@@ -348,51 +278,38 @@ function showNotification(response, message) {
     area.classList.add('show');
     
     if (response === 'YES') {
+        area.classList.add('success');
         area.style.backgroundColor = '#d4edda';
-        area.style.border = '2px solid #c3e6cb';
+        area.style.borderColor = '#c3e6cb';
         area.style.color = '#155724';
     } else {
+        area.classList.add('rejection');
         area.style.backgroundColor = '#f8d7da';
-        area.style.border = '2px solid #f5c6cb';
+        area.style.borderColor = '#f5c6cb';
         area.style.color = '#721c24';
     }
     
     messageEl.textContent = message;
+    
     console.log('✅ Notification displayed!');
 }
 
-// Respond to Proposal
 async function respondToProposal(response){
     const urlParams=new URLSearchParams(window.location.search);
     const proposalToken=urlParams.get('proposal');
-    
-    if(!proposalToken){ 
-        alert('Invalid proposal link'); 
-        return; 
-    }
-    
-    console.log('💌 Responding:', response);
+    if(!proposalToken){ alert('Invalid proposal link'); return; }
     triggerAnimation(response);
-    
     try{
         const res=await fetch(`${API_BASE_URL}/proposal/${proposalToken}/respond`,{
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({response})
         });
-        
         if(!res.ok) throw new Error('Failed to submit response');
-        
-        console.log('✅ Response submitted');
         showPage(response==='YES'?'yesResponsePage':'noResponsePage');
-        
-    }catch(e){ 
-        console.error('❌ Response error:', e);
-        alert('Failed to submit response: '+e.message);
-    }
+    }catch(e){ alert('Failed to submit response: '+e.message);}
 }
 
-// Animation
 function triggerAnimation(response){
     const layer=document.getElementById('animationLayer');
     for(let i=0;i<15;i++){
@@ -406,13 +323,9 @@ function triggerAnimation(response){
     }
 }
 
-// Check for proposal link on load
 window.addEventListener('DOMContentLoaded',()=>{
     const urlParams=new URLSearchParams(window.location.search);
-    if(urlParams.get('proposal')) {
-        console.log('🔗 Proposal link detected');
-        showPage('proposalPage');
-    }
+    if(urlParams.get('proposal')) showPage('proposalPage');
 });
 </script>
 </body>
