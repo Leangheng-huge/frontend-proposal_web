@@ -29,11 +29,15 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 .dashboard-container{background:white;padding:40px;border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,0.2);width:90%;max-width:600px;text-align:center;}
 .link-section{background:#f8f9fa;padding:25px;border-radius:10px;margin:30px 0;}
 .link-display{background:white;padding:15px;border-radius:8px;border:2px solid #e0e0e0;margin-bottom:15px;word-break:break-all;font-size:14px;color:#667eea;}
-.btn-copy{background:#667eea;color:white;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;transition:all 0.3s;}
-.btn-copy:hover{background:#5568d3;transform:translateY(-2px);}
-.email-notice{background:#e7f3ff;padding:15px;border-radius:8px;margin-top:20px;border-left:4px solid #667eea;}
-.email-notice p{color:#333;font-size:14px;margin:5px 0;}
-.email-notice strong{color:#667eea;}
+.btn-copy{background:#667eea;color:white;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;}
+.notification-area{margin-top:30px;padding:20px;border-radius:10px;display:none;border:2px solid;}
+.notification-area.show{display:block;}
+.notification-area.success{background:#d4edda;border-color:#c3e6cb;color:#155724;}
+.notification-area.rejection{background:#f8d7da;border-color:#f5c6cb;color:#721c24;}
+.notification-area h3{margin-bottom:10px;font-size:22px;}
+.notification-area p{font-size:16px;line-height:1.5;}
+.status-indicator{display:inline-block;padding:5px 15px;background:#ffc107;color:#000;border-radius:20px;font-size:12px;margin-left:10px;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
 /* Proposal */
 #proposalPage{background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);}
 .proposal-container{background:white;padding:50px;border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:90%;}
@@ -43,7 +47,6 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 .btn-yes{background:linear-gradient(135deg,#ff6b9d 0%,#ffc371 100%);color:white;}
 .btn-no{background:#6c757d;color:white;}
 .btn-yes:hover,.btn-no:hover{transform:scale(1.05);}
-.btn-yes:disabled,.btn-no:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
 #yesResponsePage{background:#FFC0CB;}
 #noResponsePage{background:#000000;}
 .response-message{text-align:center;padding:40px;max-width:800px;color:white;}
@@ -120,15 +123,14 @@ Already have an account?
 <div class="dashboard-container">
 <h1>Welcome, <span id="welcomeEmail"></span>! 💖</h1>
 <div class="link-section">
-<h3>Your Proposal Link</h3>
-<p>Please copy the link below and share it with someone you like!</p>
+<h3>Your Proposal Link <span class="status-indicator" id="statusIndicator" style="display:none;">⏳ Waiting for response</span></h3>
+<p>Please copy the link below and share it with someone you like. You'll get notified here when they respond!</p>
 <div class="link-display" id="shareableLink">Creating your proposal...</div>
 <button class="btn-copy" onclick="copyLink(event)">📋 Copy Link</button>
-<div class="email-notice">
-<p><strong>📧 Email Notifications Enabled</strong></p>
-<p>You will receive an email when someone responds to your proposal!</p>
-<p style="font-size:12px;color:#666;margin-top:5px;">Check your inbox and spam folder</p>
 </div>
+<div class="notification-area" id="notificationArea">
+<h3 id="notificationTitle">Response Received!</h3>
+<p id="notificationMessage"></p>
 </div>
 </div>
 </div>
@@ -167,6 +169,7 @@ And if I still cannot make you happy, I will let you go with a heavy heart.
 const API_BASE_URL = 'https://corsproxy.io/?https://spirited-strength-production.up.railway.app/api';
 let currentUser = null;
 let currentProposalId = null;
+let statusCheckInterval = null;
 
 function showPage(pageId) {
     console.log('📄 Switching to page:', pageId);
@@ -292,8 +295,20 @@ async function createProposal(){
         
         if(shareableLink){ 
             document.getElementById('shareableLink').textContent=shareableLink;
+            
+            // Clear any existing interval first
+            if(statusCheckInterval) {
+                console.log('⏹️ Clearing existing status check interval');
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+            
+            // Start status checking
+            startStatusCheck();
             console.log('✅ Proposal ready! ID:', currentProposalId);
-            console.log('📧 Email notifications are enabled - user will receive email when someone responds');
+            
+            // Show status indicator
+            document.getElementById('statusIndicator').style.display='inline-block';
         } else {
             throw new Error('No shareable link in response');
         }
@@ -313,16 +328,109 @@ function copyLink(e){
     navigator.clipboard.writeText(linkText).then(()=>{ 
         const btn=e.target; 
         const originalText = btn.textContent;
-        btn.textContent='✓ Copied! Check email for responses!'; 
+        btn.textContent='✓ Copied!'; 
         btn.style.background='#28a745';
         setTimeout(()=>{
             btn.textContent=originalText;
             btn.style.background='#667eea';
-        }, 3000); 
+        }, 2000); 
     }).catch(err => {
         console.error('Failed to copy:', err);
         alert('Failed to copy link. Please copy manually.');
     });
+}
+
+function startStatusCheck(){ 
+    console.log('🚀 Starting status check interval (every 3 seconds)...');
+    
+    // Check immediately
+    checkProposalStatus();
+    
+    // Then check every 3 seconds
+    statusCheckInterval = setInterval(checkProposalStatus, 3000);
+}
+
+async function checkProposalStatus() {
+    if (!currentProposalId) {
+        console.warn('⚠️ No proposal ID set, skipping status check');
+        return;
+    }
+    
+    try {
+        console.log('🔍 Checking proposal status for ID:', currentProposalId);
+        
+        const response = await fetch(`${API_BASE_URL}/proposal/${currentProposalId}/status`, {
+            headers: { 
+                'Authorization': `Bearer ${currentUser.token}` 
+            }
+        });
+
+        console.log('📡 Status check response status:', response.status);
+
+        if (!response.ok) {
+            console.error('❌ Status check failed:', response.status);
+            return;
+        }
+
+        const data = await response.json();
+        console.log('✅ Status data:', data);
+
+        if (data.answered) {
+            console.log('🎉 PROPOSAL HAS BEEN ANSWERED!', data.response);
+            
+            // Stop checking
+            clearInterval(statusCheckInterval);
+            statusCheckInterval = null;
+            
+            // Hide status indicator
+            document.getElementById('statusIndicator').style.display='none';
+            
+            // Show notification
+            showNotification(data.response, data.notification);
+            
+            // Play a sound or show browser notification if permission granted
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('💕 Proposal Response!', {
+                    body: data.notification || `They said ${data.response}!`,
+                    icon: data.response === 'YES' ? '❤️' : '💔'
+                });
+            }
+        } else {
+            console.log('⏳ Still waiting for response...');
+        }
+    } catch (error) {
+        console.error('❌ Status check error:', error);
+    }
+}
+
+function showNotification(response, message) {
+    console.log('🔔 Showing notification:', response, message);
+    
+    const area = document.getElementById('notificationArea');
+    const titleEl = document.getElementById('notificationTitle');
+    const messageEl = document.getElementById('notificationMessage');
+    
+    // Remove any previous classes
+    area.classList.remove('success', 'rejection');
+    
+    // Add the show class
+    area.classList.add('show');
+    
+    // Style based on response
+    if (response === 'YES') {
+        area.classList.add('success');
+        titleEl.textContent = '🎉 They said YES!';
+    } else {
+        area.classList.add('rejection');
+        titleEl.textContent = '💔 They said NO';
+    }
+    
+    messageEl.textContent = message || `Response: ${response}`;
+    
+    // Scroll to notification
+    area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    console.log('✅ Notification displayed successfully!');
 }
 
 async function respondToProposal(response){
@@ -358,7 +466,6 @@ async function respondToProposal(response){
         
         const data = await res.json();
         console.log('✅ Response submitted successfully:', data);
-        console.log('📧 Email notification sent to proposal creator!');
         
         // Show appropriate response page
         setTimeout(() => {
@@ -391,7 +498,7 @@ function triggerAnimation(response){
     }
 }
 
-// Page load handler
+// Request notification permission on page load
 window.addEventListener('DOMContentLoaded',()=>{
     console.log('🌐 Page loaded');
     
@@ -399,6 +506,21 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(urlParams.get('proposal')) {
         console.log('🎯 Proposal link detected, showing proposal page');
         showPage('proposalPage');
+    }
+    
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            console.log('🔔 Notification permission:', permission);
+        });
+    }
+});
+
+// Clean up interval when page is closed
+window.addEventListener('beforeunload', () => {
+    if(statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+        console.log('🧹 Cleaned up status check interval');
     }
 });
 </script>
