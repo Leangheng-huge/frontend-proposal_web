@@ -2,22 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Romantic Proposal App</title>
 <style>
+/* ==== STYLES SAME AS YOUR ORIGINAL ==== */
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:100vh; display:flex; justify-content:center; align-items:center; }
-.page { display:none; width:100%; min-height:100vh; }
+body { 
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    min-height:100vh; 
+    display:flex; 
+    justify-content:center; 
+    align-items:center;
+    overflow-x:hidden;
+}
+.page { display:none; width:100%; min-height:100vh; padding:10px; }
 .page.active { display:flex; justify-content:center; align-items:center; flex-direction:column; }
-#loginPage,#registerPage{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
-.login-container { background:white; padding:40px; border-radius:15px; box-shadow:0 10px 40px rgba(0,0,0,0.2); width:90%; max-width:400px; }
-.login-container h1 { text-align:center; color:#333; margin-bottom:30px; font-size:28px; }
-.form-group { margin-bottom:20px; }
-.form-group label { display:block; margin-bottom:8px; color:#555; font-weight:500; }
+
+/* Login & Register Pages */
+#loginPage,#registerPage{ background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); }
+.login-container { background:white; padding:30px 20px; border-radius:15px; box-shadow:0 10px 40px rgba(0,0,0,0.2); width:95%; max-width:400px; }
+.login-container h1 { text-align:center; color:#333; margin-bottom:25px; font-size:24px; }
+.form-group { margin-bottom:18px; }
+.form-group label { display:block; margin-bottom:6px; color:#555; font-weight:500; font-size:14px; }
 .form-group input { width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; transition:border-color 0.3s; }
 .form-group input:focus { outline:none; border-color:#667eea; }
 .password-wrapper { position:relative; }
-.password-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#666; padding:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center; }
+.password-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#666; font-size:18px; padding:5px; }
 .btn { width:100%; padding:14px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; }
 .btn-primary { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; }
 .btn-primary:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(102,126,234,0.4); }
@@ -50,6 +60,7 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:1
 <body>
 <div id="animationLayer"></div>
 
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="page active">
 <div class="login-container">
 <h1>💕 Romantic Proposal</h1>
@@ -74,6 +85,7 @@ Don't have an account? <a href="#" onclick="showPage('registerPage');return fals
 </div>
 </div>
 
+<!-- REGISTER PAGE -->
 <div id="registerPage" class="page">
 <div class="login-container">
 <h1>💕 Create Account</h1>
@@ -92,7 +104,7 @@ Don't have an account? <a href="#" onclick="showPage('registerPage');return fals
 <input type="password" id="regPassword" required minlength="6">
 <button type="button" class="password-toggle" onclick="toggleRegPassword()">👁️</button>
 </div>
-<small style="color:#666;">At least 6 characters</small>
+<small style="color:#666;font-size:12px;">At least 6 characters</small>
 </div>
 <button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
 <div class="error-message" id="registerError"></div>
@@ -103,27 +115,34 @@ Already have an account? <a href="#" onclick="showPage('loginPage');return false
 </div>
 </div>
 
+<!-- DASHBOARD PAGE -->
 <div id="dashboardPage" class="page">
 <div class="dashboard-container">
-<h1>Welcome, <span id="welcomeEmail"></span>! 💖</h1>
+<h1>Welcome,<br><span id="welcomeEmail"></span>! 💖</h1>
 <div class="link-section">
 <h3>Your Proposal Link</h3>
 <p style="margin-bottom:15px;">Copy the link below and share it with someone special!</p>
 <div class="link-display" id="shareableLink">Creating your proposal...</div>
 <button class="btn-copy" onclick="copyLink(event)">📋 Copy Link</button>
+<div class="email-notice">
+<p><strong>📧 Email Notifications Enabled</strong></p>
+<p>You will receive an email when someone responds to your proposal!</p>
+<p style="font-size:11px;color:#666;margin-top:5px;">Check your inbox and spam folder</p>
+</div>
 </div>
 <div class="notification-area" id="notificationArea">
-<h3>Response Received!</h3>
-<p id="notificationMessage"></p>
+<h3 id="notificationTitle">🎉 They said YES!</h3>
+<p id="notificationMessage">Congratulations!! I am so, so happy for you! You totally deserve this.</p>
 </div>
 </div>
 </div>
 
+<!-- PROPOSAL PAGE -->
 <div id="proposalPage" class="page">
 <div class="proposal-container">
 <div class="heart">❤️</div>
 <h1>Will you be with me?</h1>
-<p style="color:#666;margin:20px 0;">Please answer honestly, no matter the answer, I will respect your choice. 😉</p>
+<p>Please answer honestly. No matter your answer, I will respect your choice. 😉</p>
 <div class="button-group">
 <button class="btn-yes" onclick="respondToProposal('YES')">Yes! 💕</button>
 <button class="btn-no" onclick="respondToProposal('NO')">No, sorry</button>
@@ -131,6 +150,7 @@ Already have an account? <a href="#" onclick="showPage('loginPage');return false
 </div>
 </div>
 
+<!-- RESPONSE PAGES -->
 <div id="yesResponsePage" class="page">
 <div class="response-message">
 <h1>I love you since a long time!! 💕</h1>
@@ -145,8 +165,7 @@ Already have an account? <a href="#" onclick="showPage('loginPage');return false
 </div>
 
 <script>
-// ✅ FIXED: No CORS proxy needed!
-const API_BASE_URL = 'https://spirited-strength-production.up.railway.app/api';
+const API_BASE_URL = 'https://corsproxy.io/?https://spirited-strength-production.up.railway.app/api';
 let currentUser = null;
 let currentProposalId = null;
 let statusCheckInterval = null;
@@ -154,6 +173,7 @@ let statusCheckInterval = null;
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
+    window.scrollTo(0,0);
 }
 
 function togglePassword() { 
@@ -166,7 +186,6 @@ function toggleRegPassword() {
     input.type = input.type==='password'?'text':'password'; 
 }
 
-// Registration
 document.getElementById('registerForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const name=document.getElementById('regName').value;
@@ -183,19 +202,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e)=>{
     
     try{
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({name,email,password})
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name,email,password})
         });
-        
-        if(!response.ok){ 
-            const errorData=await response.json().catch(()=>({message:'Registration failed'})); 
-            throw new Error(errorData.message||`Error:${response.status}`);
-        }
-        
+        if(!response.ok){ const errorData=await response.json().catch(()=>({message:'Registration failed'})); throw new Error(errorData.message||`Error:${response.status}`);}
         const data=await response.json();
-        console.log('✅ Registered:', data);
-        
         currentUser={ email:data.email, token:data.token, userId:data.userId };
         document.getElementById('welcomeEmail').textContent=email;
         showPage('dashboardPage');
@@ -211,7 +221,6 @@ document.getElementById('registerForm').addEventListener('submit', async (e)=>{
     }
 });
 
-// Login
 document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const email=document.getElementById('email').value;
@@ -227,19 +236,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     
     try{
         const response=await fetch(`${API_BASE_URL}/auth/login`, {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({email,password})
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})
         });
-        
-        if(!response.ok){ 
-            const errorData=await response.json().catch(()=>({message:'Login failed'})); 
-            throw new Error(errorData.message||`Error:${response.status}`);
-        }
-        
+        if(!response.ok){ const errorData=await response.json().catch(()=>({message:'Login failed'})); throw new Error(errorData.message||`Error:${response.status}`);}
         const data=await response.json();
-        console.log('✅ Logged in:', data);
-        
         currentUser={ email:data.email, token:data.token, userId:data.userId };
         document.getElementById('welcomeEmail').textContent=email;
         showPage('dashboardPage');
@@ -255,17 +255,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
     }
 });
 
-// Create Proposal
 async function createProposal(){
-    console.log('🎯 Creating proposal...');
-    
     try{
         const response=await fetch(`${API_BASE_URL}/proposal/create`,{
             method:'POST',
-            headers:{
-                'Authorization':`Bearer ${currentUser.token}`,
-                'Content-Type':'application/json'
-            }
+            headers:{'Authorization':`Bearer ${currentUser.token}`,'Content-Type':'application/json'}
         });
         
         if(!response.ok){ 
@@ -370,15 +364,15 @@ async function respondToProposal(response){
         alert('Invalid proposal link'); 
         return; 
     }
-    
+
     console.log('💌 Responding:', response);
     triggerAnimation(response);
     
     try{
-        const res=await fetch(`${API_BASE_URL}/proposal/${proposalToken}/respond`,{
+        const response=await fetch(`${API_BASE_URL}/proposal/respond`,{
             method:'POST',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({response})
+            body:JSON.stringify({proposalToken,response:answer})
         });
         
         if(!res.ok) throw new Error('Failed to submit response');
