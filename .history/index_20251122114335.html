@@ -193,41 +193,6 @@ body {
     font-size:14px;
 }
 
-/* In-App Notification */
-.notification-area{
-    margin-top:20px;
-    padding:20px 15px;
-    border-radius:10px;
-    display:none;
-    text-align:left;
-}
-.notification-area.show{
-    display:block;
-    animation:slideDown 0.5s ease-out;
-}
-@keyframes slideDown{
-    from{opacity:0;transform:translateY(-20px);}
-    to{opacity:1;transform:translateY(0);}
-}
-.notification-area.success{
-    background:linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    border-left:4px solid #28a745;
-}
-.notification-area.rejection{
-    background:linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-    border-left:4px solid #dc3545;
-}
-.notification-area h3{
-    font-size:20px;
-    margin-bottom:10px;
-    color:#333;
-}
-.notification-area p{
-    font-size:15px;
-    line-height:1.6;
-    color:#444;
-}
-
 /* Proposal Page */
 #proposalPage{
     background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);
@@ -429,19 +394,14 @@ Already have an account?
 <h1>Welcome,<br><span id="welcomeEmail"></span>! 💖</h1>
 <div class="link-section">
 <h3>Your Proposal Link</h3>
-<p>Please copy the link below and share it with someone you like. You'll get notified here when they respond!</p>
+<p>Copy and share this link with someone special!</p>
 <div class="link-display" id="shareableLink">Creating your proposal...</div>
 <button class="btn-copy" onclick="copyLink(event)">📋 Copy Link</button>
 <div class="email-notice">
 <p><strong>📧 Email Notifications Enabled</strong></p>
-<p>You will receive an email when someone responds to your proposal!</p>
+<p>You'll receive an email when they respond!</p>
 <p style="font-size:11px;color:#666;margin-top:5px;">Check your inbox and spam folder</p>
 </div>
-</div>
-<!-- IN-APP NOTIFICATION (LIKE YOUR SCREENSHOT) -->
-<div class="notification-area" id="notificationArea">
-<h3 id="notificationTitle">🎉 They said YES!</h3>
-<p id="notificationMessage">Congratulations!! I am so, so happy for you! You totally deserve this.</p>
 </div>
 </div>
 </div>
@@ -480,7 +440,6 @@ And if I still cannot make you happy, I will let you go with a heavy heart.</p>
 const API_BASE_URL = 'https://corsproxy.io/?https://spirited-strength-production.up.railway.app/api';
 let currentUser = null;
 let currentProposalId = null;
-let statusCheckInterval = null;
 
 function showPage(pageId) {
     console.log('📄 Switching to page:', pageId);
@@ -512,7 +471,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e)=>{
     errorDiv.style.display='none';
     
     try{
-        console.log('📝 Registering user');
+        console.log('📝 Registering user:', email);
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method:'POST',
             headers:{'Content-Type':'application/json'},
@@ -606,9 +565,6 @@ async function createProposal(){
         if(shareableLink){ 
             document.getElementById('shareableLink').textContent=shareableLink;
             console.log('📧 Email notifications enabled');
-            
-            // Start checking for responses
-            startStatusCheck();
         } else {
             throw new Error('No link returned');
         }
@@ -616,63 +572,6 @@ async function createProposal(){
         console.error('❌ Error:', e);
         document.getElementById('shareableLink').textContent='Error: '+e.message; 
     }
-}
-
-function startStatusCheck(){
-    console.log('🚀 Starting status check (every 5 seconds)');
-    checkProposalStatus(); // Check immediately
-    statusCheckInterval = setInterval(checkProposalStatus, 5000);
-}
-
-async function checkProposalStatus() {
-    if (!currentProposalId) return;
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/proposal/${currentProposalId}/status`, {
-            headers: { 
-                'Authorization': `Bearer ${currentUser.token}` 
-            }
-        });
-
-        if (!response.ok) return;
-
-        const data = await response.json();
-        console.log('📊 Status:', data);
-
-        if (data.answered) {
-            console.log('🎉 ANSWERED!', data.response);
-            
-            clearInterval(statusCheckInterval);
-            statusCheckInterval = null;
-            
-            showNotification(data.response, data.notification);
-        }
-    } catch (error) {
-        console.error('❌ Status check error:', error);
-    }
-}
-
-function showNotification(response, message) {
-    console.log('🔔 Showing notification');
-    
-    const area = document.getElementById('notificationArea');
-    const titleEl = document.getElementById('notificationTitle');
-    const messageEl = document.getElementById('notificationMessage');
-    
-    area.classList.remove('success', 'rejection');
-    
-    if (response === 'YES') {
-        area.classList.add('success');
-        titleEl.textContent = '🎉 They said YES!';
-        messageEl.textContent = message || 'Congratulations!! I am so, so happy for you! You totally deserve this.';
-    } else {
-        area.classList.add('rejection');
-        titleEl.textContent = '💙 They said NO';
-        messageEl.textContent = message || 'It\'s okay to feel disappointed. Take all the time you need. 💙';
-    }
-    
-    area.classList.add('show');
-    area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function copyLink(e){ 
@@ -691,6 +590,7 @@ function copyLink(e){
             btn.style.background='#667eea';
         }, 2000); 
     }).catch(err => {
+        // Fallback for older browsers
         const textArea = document.createElement('textarea');
         textArea.value = linkText;
         textArea.style.position='fixed';
@@ -718,9 +618,13 @@ async function respondToProposal(response){
         return; 
     }
     
+    // Show response page immediately for better UX
     showPage(response==='YES'?'yesResponsePage':'noResponsePage');
+    
+    // Trigger animation
     triggerAnimation(response);
     
+    // Send to backend in background
     try{
         console.log('📤 Sending response...');
         const res=await fetch(`${API_BASE_URL}/proposal/${proposalToken}/respond`,{
@@ -729,11 +633,15 @@ async function respondToProposal(response){
             body:JSON.stringify({response})
         });
         
-        if(res.ok) {
-            console.log('✅ Response sent! Email delivered!');
+        if(!res.ok) {
+            console.error('Failed to submit but user already saw response page');
+        } else {
+            console.log('✅ Response sent! Email notification delivered!');
         }
+        
     } catch(e){ 
-        console.error('❌ Error:', e);
+        console.error('❌ Error (background):', e);
+        // Don't show error to user since they already saw the response
     }
 }
 
@@ -758,12 +666,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(urlParams.get('proposal')) {
         console.log('🎯 Opening proposal');
         showPage('proposalPage');
-    }
-});
-
-window.addEventListener('beforeunload', () => {
-    if(statusCheckInterval) {
-        clearInterval(statusCheckInterval);
     }
 });
 </script>
