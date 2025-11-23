@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Romantic Proposal App</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:100vh; display:flex; justify-content:center; align-items:center; }
+.page { display:none; width:100%; min-height:100vh; }
+.page.active { display:flex; justify-content:center; align-items:center; flex-direction:column; }
+#loginPage,#registerPage{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
+.login-container { background:white; padding:40px; border-radius:15px; box-shadow:0 10px 40px rgba(0,0,0,0.2); width:90%; max-width:400px; }
+.login-container h1 { text-align:center; color:#333; margin-bottom:30px; font-size:28px; }
+.form-group { margin-bottom:20px; }
+.form-group label { display:block; margin-bottom:8px; color:#555; font-weight:500; }
+.form-group input { width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; transition:border-color 0.3s; }
+.form-group input:focus { outline:none; border-color:#667eea; }
+.password-wrapper { position:relative; }
+.password-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#666; padding:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center; }
+.btn { width:100%; padding:14px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.3s; }
+.btn-primary { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(102,126,234,0.4); }
+.btn-primary:disabled { opacity:0.6; cursor:not-allowed; }
+.error-message { color:#e74c3c; font-size:14px; margin-top:10px; padding:10px; background:#fee; border-radius:5px; display:none; }
+/* Dashboard */
+#dashboardPage{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);padding:20px;}
+.dashboard-container{background:white;padding:40px;border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,0.2);width:90%;max-width:600px;text-align:center;}
+.link-section{background:#f8f9fa;padding:25px;border-radius:10px;margin:30px 0;}
+.link-display{background:white;padding:15px;border-radius:8px;border:2px solid #e0e0e0;margin-bottom:15px;word-break:break-all;font-size:14px;color:#667eea;}
+.btn-copy{background:#667eea;color:white;padding:12px 30px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:600;transition:all 0.3s;}
+.btn-copy:hover{background:#5568d3;transform:translateY(-2px);}
+.email-notice{background:#e7f3ff;padding:15px;border-radius:8px;margin-top:20px;border-left:4px solid #667eea;}
+.email-notice p{color:#333;font-size:14px;margin:5px 0;}
+.email-notice strong{color:#667eea;}
+/* Proposal */
+#proposalPage{background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);}
+.proposal-container{background:white;padding:50px;border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:90%;}
+.heart{font-size:60px;margin-bottom:30px;}
+.button-group{display:flex;gap:20px;margin-top:30px;}
+.btn-yes,.btn-no{flex:1;padding:18px;border:none;border-radius:12px;font-size:20px;font-weight:700;cursor:pointer;transition:transform 0.2s;}
+.btn-yes{background:linear-gradient(135deg,#ff6b9d 0%,#ffc371 100%);color:white;}
+.btn-no{background:#6c757d;color:white;}
+.btn-yes:hover,.btn-no:hover{transform:scale(1.05);}
+.btn-yes:disabled,.btn-no:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+#yesResponsePage{background:#FFC0CB;}
+#noResponsePage{background:#000000;}
+.response-message{text-align:center;padding:40px;max-width:800px;color:white;}
+/* Animation */
+#animationLayer{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:9999;}
+.floating-heart{position:absolute;font-size:24px;animation:floatUp 2s ease-out forwards;opacity:0;}
+.falling-tear{position:absolute;font-size:24px;color:#00f;animation:fallDown 2s ease-in forwards;opacity:0;}
+@keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-200px) scale(1.5);opacity:0;}}
+@keyframes fallDown{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(200px) scale(0.5);opacity:0;}}
+</style>
+</head>
+<body>
+<div id="animationLayer"></div>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="page active">
+<div class="login-container">
+<h1>💕 Romantic Proposal</h1>
+<form id="loginForm">
+<div class="form-group">
+<label for="email">Email</label>
+<input type="email" id="email" name="email" required autocomplete="email">
+</div>
+<div class="form-group">
+<label for="password">Password</label>
+<div class="password-wrapper">
+<input type="password" id="password" name="password" required>
+<button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+</div>
+</div>
+<button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+<div class="error-message" id="loginError"></div>
+<p style="text-align:center;margin-top:15px;color:#666;font-size:14px;">
+Don't have an account?
+<a href="#" onclick="showPage('registerPage');return false;" style="color:#667eea;font-weight:600;">Register here</a>
+</p>
+</form>
+</div>
+</div>
+
+<!-- REGISTER PAGE -->
+<div id="registerPage" class="page">
+<div class="login-container">
+<h1>💕 Create Account</h1>
+<form id="registerForm">
+<div class="form-group">
+<label for="regName">Name</label>
+<input type="text" id="regName" name="name" required autocomplete="name">
+</div>
+<div class="form-group">
+<label for="regEmail">Email</label>
+<input type="email" id="regEmail" name="email" required autocomplete="email">
+</div>
+<div class="form-group">
+<label for="regPassword">Password</label>
+<div class="password-wrapper">
+<input type="password" id="regPassword" name="password" required minlength="6">
+<button type="button" class="password-toggle" onclick="toggleRegPassword()">👁️</button>
+</div>
+<small style="color:#666;font-size:12px;">At least 6 characters</small>
+</div>
+<button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
+<div class="error-message" id="registerError"></div>
+<p style="text-align:center;margin-top:15px;color:#666;font-size:14px;">
+Already have an account?
+<a href="#" onclick="showPage('loginPage');return false;" style="color:#667eea;font-weight:600;">Login here</a>
+</p>
+</form>
+</div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="dashboardPage" class="page">
+<div class="dashboard-container">
+<h1>Welcome,<br><span id="welcomeEmail"></span>! 💖</h1>
+<div class="link-section">
+<h3>Your Proposal Link</h3>
+<p>Please copy the link below and share it with someone you like. You'll get notified here when they respond!</p>
+<div class="link-display" id="shareableLink">Creating your proposal...</div>
+<button class="btn-copy" onclick="copyLink(event)">📋 Copy Link</button>
+<div class="email-notice">
+<p><strong>📧 Email Notifications Enabled</strong></p>
+<p>You will receive an email when someone responds to your proposal!</p>
+<p style="font-size:11px;color:#666;margin-top:5px;">Check your inbox and spam folder</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PROPOSAL PAGE -->
+<div id="proposalPage" class="page">
+<div class="proposal-container">
+<div class="heart">❤️</div>
+<h1>Will you be with me?</h1>
+<p>Please answer honestly. No matter your answer, I will respect your choice. 😉</p>
+<div class="button-group">
+<button class="btn-yes" onclick="respondToProposal('YES')">Yes! 💕</button>
+<button class="btn-no" onclick="respondToProposal('NO')">No, sorry</button>
+</div>
+</div>
+</div>
+
+<!-- RESPONSE PAGES -->
+<div id="yesResponsePage" class="page">
+<div class="response-message">
+<h1>I love you since a long time!! 💕</h1>
+<p>A relationship is about 2 people. Happiness and joy should go both ways. 
+If someday I make you feel miserable or unhappy, please let me know. 
+And if I still cannot make you happy, I will let you go with a heavy heart.</p>
+</div>
+</div>
+
+<div id="noResponsePage" class="page">
+<div class="response-message">
+<h1>It's okay, I respect your choice. 😄</h1>
+<p style="margin-top:20px;">Take care of yourself. You deserve happiness.</p>
+</div>
+</div>
+
+<script>
+const API_BASE_URL = 'https://corsproxy.io/?https://spirited-strength-production.up.railway.app/api';
+let currentUser = null;
+let currentProposalId = null;
+let statusCheckInterval = null;
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    window.scrollTo(0,0);
+}
+
+function togglePassword() { 
+    const input = document.getElementById('password'); 
+    input.type = input.type==='password'?'text':'password'; 
+}
+function toggleRegPassword() { 
+    const input = document.getElementById('regPassword'); 
+    input.type = input.type==='password'?'text':'password'; 
+}
+
+document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const name=document.getElementById('regName').value;
+    const email=document.getElementById('regEmail').value;
+    const password=document.getElementById('regPassword').value;
+    const errorDiv=document.getElementById('registerError');
+    const registerBtn=document.getElementById('registerBtn');
+    
+    registerBtn.disabled=true; 
+    registerBtn.textContent='Creating Account...'; 
+    errorDiv.style.display='none';
+    
+    try{
+        console.log('📝 Registering user:', email);
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name,email,password})
+        });
+        
+        if(!response.ok){ 
+            const errorData=await response.json().catch(()=>({message:'Registration failed'})); 
+            throw new Error(errorData.message||`Error:${response.status}`);
+        }
+        
+        const data=await response.json();
+        console.log('✅ Registration successful:', data);
+        
+        currentUser={ email:data.email, token:data.token, userId:data.userId };
+        document.getElementById('welcomeEmail').textContent=email;
+        showPage('dashboardPage');
+        await createProposal();
+    } catch(e){ 
+        console.error('❌ Registration error:', e);
+        errorDiv.textContent=`Failed to register: ${e.message}`; 
+        errorDiv.style.display='block';
+    } finally{
+        registerBtn.disabled=false;
+        registerBtn.textContent='Create Account';
+    }
+});
+
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const email=document.getElementById('email').value;
+    const password=document.getElementById('password').value;
+    const errorDiv=document.getElementById('loginError');
+    const loginBtn=document.getElementById('loginBtn');
+    
+    loginBtn.disabled=true; loginBtn.textContent='Logging in...'; errorDiv.style.display='none';
+    
+    try{
+        console.log('🔐 Logging in user:', email);
+        const response=await fetch(`${API_BASE_URL}/auth/login`, {
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})
+        });
+        
+        if(!response.ok){ 
+            const errorData=await response.json().catch(()=>({message:'Login failed'})); 
+            throw new Error(errorData.message||`Error:${response.status}`);
+        }
+        
+        const data=await response.json();
+        console.log('✅ Login successful:', data);
+        
+        currentUser={ email:data.email, token:data.token, userId:data.userId };
+        document.getElementById('welcomeEmail').textContent=email;
+        showPage('dashboardPage');
+        await createProposal();
+    } catch(e){ 
+        console.error('❌ Login error:', e);
+        errorDiv.textContent=`Failed to login: ${e.message}`; 
+        errorDiv.style.display='block'; 
+    } finally{ 
+        loginBtn.disabled=false; 
+        loginBtn.textContent='Login';
+    }
+});
+
+async function createProposal(){
+    console.log('🎯 Creating/fetching proposal...');
+    try{
+        const response=await fetch(`${API_BASE_URL}/proposal/create`,{
+            method:'POST',
+            headers:{'Authorization':`Bearer ${currentUser.token}`,'Content-Type':'application/json'}
+        });
+        
+        if(!response.ok){ 
+            const errorText=await response.text(); 
+            console.error('❌ Proposal creation failed:', response.status, errorText);
+            throw new Error(`Failed to create proposal: ${response.status}`);
+        }
+        
+        const data=await response.json();
+        console.log('📋 Proposal data received:', data);
+        
+        currentProposalId=data.proposalId||data.id;
+        const shareableLink=data.shareableLink||data.shareable_link;
+        
+        if(shareableLink){ 
+            document.getElementById('shareableLink').textContent=shareableLink;
+            console.log('✅ Proposal ready! ID:', currentProposalId);
+            console.log('📧 Email notifications are enabled - user will receive email when someone responds');
+        } else {
+            throw new Error('No shareable link in response');
+        }
+    } catch(e){ 
+        console.error('❌ Create proposal error:', e);
+        document.getElementById('shareableLink').textContent='Error: '+e.message; 
+    }
+}
+
+function startStatusCheck(){
+    console.log('🚀 Starting status check (every 5 seconds)');
+    checkProposalStatus(); // Check immediately
+    statusCheckInterval = setInterval(checkProposalStatus, 5000);
+}
+
+async function checkProposalStatus() {
+    if (!currentProposalId) return;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/proposal/${currentProposalId}/status`, {
+            headers: { 
+                'Authorization': `Bearer ${currentUser.token}` 
+            }
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        console.log('📊 Status:', data);
+
+        if (data.answered) {
+            console.log('🎉 ANSWERED!', data.response);
+            
+            clearInterval(statusCheckInterval);
+            statusCheckInterval = null;
+            
+            showNotification(data.response, data.notification);
+        }
+    } catch (error) {
+        console.error('❌ Status check error:', error);
+    }
+}
+
+function showNotification(response, message) {
+    console.log('🔔 Showing notification');
+    
+    const area = document.getElementById('notificationArea');
+    const titleEl = document.getElementById('notificationTitle');
+    const messageEl = document.getElementById('notificationMessage');
+    
+    area.classList.remove('success', 'rejection');
+    
+    if (response === 'YES') {
+        area.classList.add('success');
+        titleEl.textContent = '🎉 They said YES!';
+        messageEl.textContent = message || 'Congratulations!! I am so, so happy for you! You totally deserve this.';
+    } else {
+        area.classList.add('rejection');
+        titleEl.textContent = '💙 They said NO';
+        messageEl.textContent = message || 'It\'s okay to feel disappointed. Take all the time you need. 💙';
+    }
+    
+    area.classList.add('show');
+    area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyLink(e){ 
+    const linkText=document.getElementById('shareableLink').textContent;
+    if(linkText.startsWith('Error') || linkText.startsWith('Creating')) {
+        alert('Please wait for the link to be generated!');
+        return;
+    }
+    
+    navigator.clipboard.writeText(linkText).then(()=>{ 
+        const btn=e.target; 
+        const originalText = btn.textContent;
+        btn.textContent='✓ Copied! Check email for responses!'; 
+        btn.style.background='#28a745';
+        setTimeout(()=>{
+            btn.textContent=originalText;
+            btn.style.background='#667eea';
+        }, 3000); 
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link. Please copy manually.');
+    });
+}
+
+async function respondToProposal(response){
+    console.log('💬 User responding:', response);
+    
+    const urlParams=new URLSearchParams(window.location.search);
+    const proposalToken=urlParams.get('proposal');
+    
+    if(!proposalToken){ 
+        alert('Invalid proposal link'); 
+        return; 
+    }
+    
+    // Trigger animation
+    triggerAnimation(response);
+    
+    // Disable buttons to prevent double-click
+    document.querySelectorAll('.btn-yes, .btn-no').forEach(btn => btn.disabled = true);
+    
+    try{
+        console.log('📤 Sending response to backend...');
+        const res=await fetch(`${API_BASE_URL}/proposal/${proposalToken}/respond`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({proposalToken,response:answer})
+        });
+        
+        if(!res.ok) {
+            const errorText = await res.text();
+            console.error('❌ Response submission failed:', res.status, errorText);
+            throw new Error('Failed to submit response');
+        }
+        
+        const data = await res.json();
+        console.log('✅ Response submitted successfully:', data);
+        console.log('📧 Email notification sent to proposal creator!');
+        
+        // Show appropriate response page
+        setTimeout(() => {
+            showPage(response==='YES'?'yesResponsePage':'noResponsePage');
+        }, 1000);
+        
+    } catch(e){ 
+        console.error('❌ Failed to submit response:', e);
+        alert('Failed to submit response: '+e.message);
+        // Re-enable buttons on error
+        document.querySelectorAll('.btn-yes, .btn-no').forEach(btn => btn.disabled = false);
+    }
+}
+
+function triggerAnimation(response){
+    console.log('✨ Triggering animation for:', response);
+    const layer=document.getElementById('animationLayer');
+    for(let i=0;i<20;i++){
+        setTimeout(() => {
+            const span=document.createElement('span');
+            span.textContent=response==='YES'?'❤️':'💧';
+            span.className=response==='YES'?'floating-heart':'falling-tear';
+            span.style.left=Math.random()*100+'vw';
+            span.style.top=(response==='YES'?90:10) + Math.random()*10 + 'vh';
+            span.style.animationDuration=(1+Math.random()*1.5)+'s';
+            layer.appendChild(span);
+            span.addEventListener('animationend',()=>span.remove());
+        }, i * 100);
+    }
+}
+
+// Page load handler
+window.addEventListener('DOMContentLoaded',()=>{
+    console.log('🌐 Page loaded');
+    
+    const urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('proposal')) {
+        console.log('🎯 Proposal link detected, showing proposal page');
+        showPage('proposalPage');
+    }
+});
+</script>
+</body>
+</html>
